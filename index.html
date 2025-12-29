@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Builder (Connected)</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body.login-view {
+      background-color: #FFF5E1;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.3s;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      width: 380px;
+      text-align: center;
+    }
+
+    h2,
+    h3 {
+      margin-bottom: 20px;
+      color: #5a3e1b;
+    }
+
+    button,
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    button {
+      background-color: #8b5e34;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #704a28;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 10px;
+      font-weight: 600;
+      color: #4a3215;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .back-btn {
+      background: none;
+      color: #8b5e34;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 14px;
+      width: auto;
+    }
+
+    p {
+      color: #4a3215;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    body.app-view {
+      background: #f0f2f5;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: flex-start;
+      height: 100vh;
+    }
+
+    #portfolioBuilder,
+    #recruiterApp {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      min-width: 250px;
+      background: #ffffff;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar h3 {
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 10px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      margin-top: 20px;
+      flex-grow: 1;
+    }
+
+    .sidebar ul li {
+      margin-bottom: 10px;
+    }
+
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #4a3215;
+      font-weight: 500;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 8px;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+      background-color: #f0eada;
+      color: #5a3e1b;
+    }
+
+    .logout-btn {
+      background-color: #9e433d;
+    }
+
+    .logout-btn:hover {
+      background-color: #7a312c;
+    }
+
+    .content-area {
+      flex-grow: 1;
+      padding: 30px 40px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .builder-section {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      margin-top: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .builder-section h3 {
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+    }
+
+    .builder-section input,
+    .builder-section textarea {
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .form-group {
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      background: #fafafa;
+    }
+
+    .save-btn,
+    .add-more-btn,
+    .action-btn {
+      width: auto;
+      padding: 10px 20px;
+    }
+
+    .save-btn {
+      background-color: #4CAF50;
+      margin-top: 20px;
+    }
+
+    .add-more-btn {
+      background-color: #007bff;
+      margin-top: 10px;
+    }
+
+    .preview-toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+      flex-wrap: wrap;
+    }
+
+    .preview-toolbar button {
+      width: auto;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    #portfolioPreviewContent {
+      background: white;
+      width: 100%;
+      max-width: 800px;
+      min-height: 1000px;
+      margin: 0 auto;
+      padding: 40px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      color: #333;
+    }
+
+    .res-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .res-header-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .res-header h1 {
+      font-size: 28px;
+      color: #222;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .res-header p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .res-photo-box {
+      width: 130px;
+      height: 130px;
+      border: 2px solid #ddd;
+      margin-left: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .res-photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .res-section {
+      margin-bottom: 25px;
+    }
+
+    .res-section h4 {
+      font-size: 18px;
+      color: #8b5e34;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .res-item {
+      margin-bottom: 15px;
+    }
+
+    .res-item-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .res-subtitle {
+      font-style: italic;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .res-desc {
+      font-size: 14px;
+      margin-top: 5px;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+
+    .res-skills {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .res-contact-info {
+      margin-top: 10px;
+    }
+
+    .res-contact-info span {
+      margin-right: 10px;
+      display: inline-block;
+    }
+
+    .file-upload-container {
+      width: 100%;
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px dashed #6c757d;
+    }
+  </style>
+</head>
+
+<body class="login-view">
+
+  <div class="container" id="loginContainer">
+    <h2>Welcome to Resume Portal</h2>
+
+    <div id="roleSelection">
+      <p>Who are you?</p>
+      <button onclick="selectRole('recruiter')">Recruiter</button>
+      <button onclick="selectRole('jobseeker')">Job Seeker</button>
+    </div>
+
+    <div id="recruiterLogin" class="hidden">
+      <h3>Recruiter Login</h3>
+      <label>Official Company Email</label>
+      <input type="email" id="recruiterEmail" placeholder="Enter company email" required>
+      <label>Password</label>
+      <input type="password" id="recruiterPass" placeholder="Enter password" required>
+      <button onclick="loginRecruiter()">Login</button>
+      <button class="back-btn" onclick="goBack()">← Back</button>
+    </div>
+
+    <div id="jobseekerChoice" class="hidden">
+      <p>Do you already have an account?</p>
+      <button onclick="showJobseekerLogin()">Yes, I have</button>
+      <button onclick="showJobseekerRegister()">No, I need to create one</button>
+      <button class="back-btn" onclick="goBack()">← Back</button>
+    </div>
+
+    <div id="jobseekerLogin" class="hidden">
+      <h3>Job Seeker Login</h3>
+      <label>Email</label>
+      <input type="email" id="seekerEmail" placeholder="Enter your email" required>
+      <label>Password</label>
+      <input type="password" id="seekerPass" placeholder="Enter password" required>
+      <button onclick="loginSeeker()">Login</button>
+      <button class="back-btn" onclick="goBackToChoice()">← Back</button>
+    </div>
+
+    <div id="jobseekerRegister" class="hidden">
+      <h3>Job Seeker Registration</h3>
+      <label>Full Name</label>
+      <input type="text" id="regName" placeholder="Enter full name" required>
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="Enter your email" required>
+      <label>Password</label>
+      <input type="password" id="regPass" placeholder="Create password" required>
+      <button onclick="registerSeeker()">Register</button>
+      <button class="back-btn" onclick="goBackToChoice()">← Back</button>
+    </div>
+  </div>
+
+  <script>
+    // --- THIS IS THE CRITICAL CONNECTION PART ---
+    const API_URL = "http://localhost:5000/api";
+    let currentUserEmail = "";
+
+    async function loginRecruiter() {
+      const email = document.getElementById("recruiterEmail").value.trim();
+      const pass = document.getElementById("recruiterPass").value.trim();
+
+      if (!email || !pass) return alert("Fill all fields");
+
+      try {
+        const res = await fetch(`${API_URL}/recruiter/login`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password: pass })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          currentUserEmail = email;
+          showRecruiterApp();
+        } else alert(data.message);
+      } catch (err) {
+        console.error(err);
+        alert("Server connection failed. Is the terminal running?");
+      }
+    }
+
+    async function loginSeeker() {
+      const email = document.getElementById("seekerEmail").value.trim();
+      const pass = document.getElementById("seekerPass").value.trim();
+
+      if (!email || !pass) return alert("Fill all fields");
+
+      try {
+        const res = await fetch(`${API_URL}/jobseeker/login`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password: pass })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          currentUserEmail = email;
+          showApp();
+        } else alert(data.message);
+      } catch (err) {
+        console.error(err);
+        alert("Server connection failed. Is the terminal running?");
+      }
+    }
+
+    async function registerSeeker() {
+      const name = document.getElementById("regName").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const pass = document.getElementById("regPass").value.trim();
+
+      try {
+        const res = await fetch(`${API_URL}/jobseeker/register`, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password: pass })
+        });
+        if (res.ok) {
+          alert("Registered! Logging in...");
+          currentUserEmail = email;
+          showApp();
+        } else alert("Error registering");
+      } catch (err) {
+        console.error(err);
+        alert("Server connection failed. Is the terminal running?");
+      }
+    }
+    // ---------------------------------------------
+
+    const portfolioBuilderHTML = `
+  <div id="portfolioBuilder" class="hidden">
+    <nav class="sidebar">
+      <h3>Builder Menu</h3>
+      <ul>
+        <li><a class="active" onclick="showSection('welcomeMessage', event)">Dashboard</a></li>
+        <li><a onclick="showSection('personalDetails', event)">Personal Details</a></li>
+        <li><a onclick="showSection('experience', event)">Experience</a></li>
+        <li><a onclick="showSection('education', event)">Education</a></li>
+        <li><a onclick="showSection('projects', event)">Projects</a></li>
+        <li><a onclick="showSection('skills', event)">Skills</a></li>
+        <li><a onclick="showSection('previewSection', event); generatePreview()"><strong>Preview & Export</strong></a></li>
+      </ul>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </nav>
+      
+    <main class="content-area">
+      <div id="welcomeMessage">
+        <h2>Welcome to the Portfolio Builder</h2>
+        <p>Select a section from the left to start building your portfolio.</p>
+        <br>
+        <button class="action-btn" onclick="showSection('previewSection', null); generatePreview()" style="background-color: #28a745; color: white; width: auto;">Create / View Portfolio</button>
+      </div>
+
+      <section id="personalDetails" class="builder-section hidden">
+        <h3>Personal Details</h3>
+        <label>Profile Photo</label>
+        <input type="file" id="inpPhoto" accept="image/jpeg, image/png, image/jpg" onchange="handlePhotoUpload(this)">
+        <small style="color: #666;">Accepted formats: JPEG, JPG, PNG</small>
+        <label>Full Name</label>
+        <input type="text" id="inpFullName" placeholder="e.g.,Sam">
+        <label>Headline</label>
+        <input type="text" id="inpHeadline" placeholder="e.g.,WEB Developer">
+        <label>Email</label>
+        <input type="email" id="inpEmail" placeholder="e.g., sam@example.com">
+        <label>Phone</label>
+        <input type="tel" id="inpPhone" placeholder="e.g., +1234567890">
+        <label>LinkedIn URL</label>
+        <input type="url" id="inpLinkedIn" placeholder="https://linkedin.com/in/...">
+        <label>Professional Summary</label>
+        <textarea id="inpSummary" rows="5" placeholder="Write a brief summary "></textarea>
+        <button class="save-btn" onclick="saveData()">Save Details</button>
+      </section>
+
+      <section id="experience" class="builder-section hidden">
+        <h3>Work Experience</h3>
+        <div class="form-group">
+          <label>Company Name</label>
+          <input type="text" id="inpExpCompany" placeholder="e.g., Google">
+          <label>Job Title</label>
+          <input type="text" id="inpExpTitle" placeholder="e.g., Coder">
+          <label>Start Date</label>
+          <input type="month" id="inpExpStart">
+          <label>End Date</label>
+          <input type="month" id="inpExpEnd">
+          <label>Responsibilities</label>
+          <textarea id="inpExpDesc" rows="4" placeholder="- Developed new features..."></textarea>
+        </div>
+        <button class="add-more-btn">+ Add Another Experience</button>
+        <button class="save-btn" onclick="saveData()">Save Experience</button>
+      </section>
+
+      <section id="education" class="builder-section hidden">
+        <h3>Education</h3>
+        <div class="form-group">
+          <label>Institution</label>
+          <input type="text" id="inpEduInst" placeholder="e.g., BMSCE">
+          <label>Degree</label>
+          <input type="text" id="inpEduDegree" placeholder="e.g., B.E. in CS">
+          <label>Graduation Date</label>
+          <input type="month" id="inpEduDate">
+          <label>GPA (Optional)</label>
+          <input type="text" id="inpEduGpa" placeholder="e.g., 8.0/10">
+        </div>
+        <button class="add-more-btn">+ Add Another Degree</button>
+        <button class="save-btn" onclick="saveData()">Save Education</button>
+      </section>
+
+      <section id="projects" class="builder-section hidden">
+        <h3>Projects</h3>
+        <div class="form-group">
+          <label>Project Title</label>
+          <input type="text" id="inpProjTitle" placeholder="e.g., E-commerce Website">
+          <label>Project Description</label>
+          <textarea id="inpProjDesc" rows="3" placeholder="Describe your project..."></textarea>
+          <label>Project Link</label>
+          <input type="url" id="inpProjLink" placeholder="https://github.com/...">
+          <label>Technologies Used</label>
+          <input type="text" id="inpProjTech" placeholder="e.g., Node.js, MongoDB">
+        </div>
+        <button class="add-more-btn">+ Add Another Project</button>
+        <button class="save-btn" onclick="saveData()">Save Projects</button>
+      </section>
+
+      <section id="skills" class="builder-section hidden">
+        <h3>Skills</h3>
+        <label>Languages</label>
+        <input type="text" id="inpSkillLang" placeholder="e.g., JavaScript, Python, Java">
+        <label>Frameworks/Libraries</label>
+        <input type="text" id="inpSkillFrame" placeholder="e.g., Node.js, Django, Spring Boot">
+        <label>Tools/Databases</label>
+        <input type="text" id="inpSkillTools" placeholder="e.g., MongoDB, PostgreSQL">
+        <button class="save-btn" onclick="saveData()">Save Skills</button>
+      </section>
+
+      <section id="previewSection" class="hidden">
+         <div class="file-upload-container">
+            <h4>Upload Existing Portfolio (PDF/DOC)</h4>
+            <p style="font-size:12px; color:#666;">If you have a pre-made portfolio file, upload it here to store in your profile.</p>
+            <input type="file" id="portfolioUploadFile" accept=".pdf,.doc,.docx" />
+            <button onclick="uploadPortfolio()" style="background:#6f42c1; width:auto; margin-top:5px;">Upload File</button>
+         </div>
+
+         <div class="preview-toolbar">
+            <button onclick="downloadPDF()" style="background:#dc3545">Export as PDF</button>
+            <button onclick="exportWord()" style="background:#007bff">Export as DOCX</button>
+            <button onclick="printPortfolio()" style="background:#6c757d">Print</button>
+         </div>
+         
+         <div id="portfolioPreviewContent">
+            <div class="res-header">
+                <div class="res-header-info">
+                    <h1 id="prevName">Your Name</h1>
+                    <h3 id="prevHeadline" style="font-weight:400; margin-bottom:5px;">Headline</h3>
+                    <div class="res-contact-info">
+                        <span id="prevEmail">email@example.com</span> | 
+                        <span id="prevPhone">+123 456 7890</span> | 
+                        <span id="prevLink">linkedin.com/in/user</span>
+                    </div>
+                </div>
+                
+                <div class="res-photo-box hidden" id="prevPhotoContainer">
+                    <img id="prevPhotoDisplay" src="" alt="Profile Photo">
+                </div>
+            </div>
+
+            <div class="res-section" id="secSummary">
+                <h4>Professional Summary</h4>
+                <p class="res-desc" id="prevSummary">Summary goes here...</p>
+            </div>
+
+            <div class="res-section" id="secExp">
+                <h4>Experience</h4>
+                <div class="res-item">
+                    <div class="res-item-header">
+                        <span id="prevExpCompany">Company</span>
+                        <span id="prevExpDate">Date - Date</span>
+                    </div>
+                    <div class="res-subtitle" id="prevExpTitle">Job Title</div>
+                    <p class="res-desc" id="prevExpDesc">Description...</p>
+                </div>
+            </div>
+
+            <div class="res-section" id="secEdu">
+                <h4>Education</h4>
+                <div class="res-item">
+                    <div class="res-item-header">
+                        <span id="prevEduInst">Institution</span>
+                        <span id="prevEduDate">Grad Date</span>
+                    </div>
+                    <div class="res-subtitle"><span id="prevEduDegree">Degree</span> <span id="prevEduGpa" style="font-size:12px; margin-left:10px;"></span></div>
+                </div>
+            </div>
+
+            <div class="res-section" id="secProj">
+                <h4>Projects</h4>
+                <div class="res-item">
+                    <div class="res-item-header">
+                        <span id="prevProjTitle">Project Title</span>
+                        <span><a href="#" id="prevProjLink" style="font-size:12px;">Link</a></span>
+                    </div>
+                    <div class="res-subtitle" id="prevProjTech">Technologies</div>
+                    <p class="res-desc" id="prevProjDesc">Description...</p>
+                </div>
+            </div>
+
+            <div class="res-section" id="secSkills">
+                <h4>Skills</h4>
+                <div class="res-skills">
+                    <p><strong>Languages:</strong> <span id="prevSkillLang"></span></p>
+                    <p><strong>Frameworks:</strong> <span id="prevSkillFrame"></span></p>
+                    <p><strong>Tools:</strong> <span id="prevSkillTools"></span></p>
+                </div>
+            </div>
+         </div>
+      </section>
+
+    </main>
+  </div>
+`;
+
+    const recruiterAppHTML = `
+  <div id="recruiterApp" class="hidden">
+    <nav class="sidebar">
+      <h3>Recruiter Menu</h3>
+      <ul>
+        <li><a class="active" onclick="showRecruiterSection('recruiterWelcomeMessage', event)">Dashboard</a></li>
+        <li><a onclick="showRecruiterSection('filterCandidates', event)">Filter Candidates</a></li>
+        <li><a onclick="showRecruiterSection('companyProfile', event)">Company Profile</a></li>
+      </ul>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </nav>
+      
+    <main class="content-area">
+      <div id="recruiterWelcomeMessage">
+        <h2>Welcome, Recruiter</h2>
+        <p>Select a section from the left to get started.</p>
+      </div>
+
+      <section id="filterCandidates" class="builder-section hidden">
+        <h3>Filter Candidates</h3>
+        <p>Find the best talent by filtering their skills and qualifications.</p>
+        
+        <label>Skills (comma-separated)</label>
+        <input type="text" placeholder="e.g., React, Node.js, Python">
+        
+        <label>Graduation Year (After)</label>
+        <input type="number" min="2000" max="2030" placeholder="e.g., 2022">
+
+        <label>Degree</label>
+        <input type="text" placeholder="e.g., B.E. in CS, M.Tech">
+        
+        <button class="save-btn" onclick="fetchCandidates()" style="background-color: #007bff;">Search Candidates</button>
+
+        <div id="filterResults" style="margin-top: 20px;">
+          <p><i>Search results will appear here...</i></p>
+        </div>
+      </section>
+
+      <section id="companyProfile" class="builder-section hidden">
+        <h3>My Company Profile</h3>
+        <p>This information will be visible to job seekers you contact.</p>
+
+        <label>Company Name</label>
+        <input type="text" placeholder="e.g., Acme Inc.">
+        <label>Company Website</label>
+        <input type="url" placeholder="https://www.acme.com">
+        <label>Company Location</label>
+        <input type="text" placeholder="e.g., San Francisco, CA">
+        <label>About Your Company</label>
+        <textarea rows="5" placeholder="Briefly describe your company, its mission, and culture."></textarea>
+        <button class="save-btn">Save Profile</button>
+      </section>
+    </main>
+  </div>
+`;
+
+    function selectRole(role) {
+      document.getElementById("roleSelection").classList.add("hidden");
+      if (role === "recruiter") {
+        document.getElementById("recruiterLogin").classList.remove("hidden");
+      } else {
+        document.getElementById("jobseekerChoice").classList.remove("hidden");
+      }
+    }
+
+    function goBack() {
+      document.querySelectorAll(".container > div").forEach(d => d.classList.add("hidden"));
+      document.getElementById("roleSelection").classList.remove("hidden");
+    }
+
+    function goBackToChoice() {
+      document.getElementById("jobseekerLogin").classList.add("hidden");
+      document.getElementById("jobseekerRegister").classList.add("hidden");
+      document.getElementById("jobseekerChoice").classList.remove("hidden");
+    }
+
+    function showJobseekerLogin() {
+      document.getElementById("jobseekerChoice").classList.add("hidden");
+      document.getElementById("jobseekerLogin").classList.remove("hidden");
+    }
+
+    function showJobseekerRegister() {
+      document.getElementById("jobseekerChoice").classList.add("hidden");
+      document.getElementById("jobseekerRegister").classList.remove("hidden");
+    }
+
+    // --- API FUNCTIONS FOR DATA SAVING ---
+
+    async function saveData() {
+      const details = {
+        headline: document.getElementById('inpHeadline').value,
+        phone: document.getElementById('inpPhone').value,
+        linkedin: document.getElementById('inpLinkedIn').value,
+        summary: document.getElementById('inpSummary').value,
+        // Add more fields if necessary...
+      };
+
+      await fetch(`${API_URL}/jobseeker/update`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: currentUserEmail, details })
+      });
+      alert("Saved!");
+    }
+
+    async function uploadPortfolio() {
+      const fileInput = document.getElementById('portfolioUploadFile');
+      if (fileInput.files.length === 0) return alert("Please select a file");
+
+      const formData = new FormData();
+      formData.append('email', currentUserEmail);
+      formData.append('portfolioFile', fileInput.files[0]);
+
+      const res = await fetch(`${API_URL}/jobseeker/upload-portfolio`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      alert(data.message);
+    }
+
+    async function fetchCandidates() {
+      const res = await fetch(`${API_URL}/recruiters/candidates`);
+      const data = await res.json();
+      const container = document.getElementById('filterResults');
+      container.innerHTML = data.map(c =>
+        `<div style="background:#eee; padding:10px; margin-bottom:5px; border-radius:5px;">
+            <strong>${c.name}</strong> (${c.email})
+            ${c.uploadedPortfolio ? `<br><a href="http://localhost:5000/${c.uploadedPortfolio}" target="_blank">Download Portfolio</a>` : ''}
+         </div>`
+      ).join('');
+    }
+
+    // --- APP SHOW LOGIC ---
+
+    function showApp() {
+      document.getElementById("loginContainer").classList.add("hidden");
+      document.body.insertAdjacentHTML('beforeend', portfolioBuilderHTML);
+      document.getElementById("portfolioBuilder").classList.remove("hidden");
+      document.body.classList.remove("login-view");
+      document.body.classList.add("app-view");
+      showSection('welcomeMessage', null);
+    }
+
+    function showRecruiterApp() {
+      document.getElementById("loginContainer").classList.add("hidden");
+      document.body.insertAdjacentHTML('beforeend', recruiterAppHTML);
+      document.getElementById("recruiterApp").classList.remove("hidden");
+      document.body.classList.remove("login-view");
+      document.body.classList.add("app-view");
+      showRecruiterSection('recruiterWelcomeMessage', null);
+    }
+
+    function logout() {
+      const builder = document.getElementById("portfolioBuilder");
+      if (builder) builder.remove();
+      const recruiterApp = document.getElementById("recruiterApp");
+      if (recruiterApp) recruiterApp.remove();
+      document.getElementById("loginContainer").classList.remove("hidden");
+      document.body.classList.remove("app-view");
+      document.body.classList.add("login-view");
+      goBack();
+    }
+
+    function showSection(sectionId, event) {
+      if (event) event.preventDefault();
+      document.querySelectorAll('#portfolioBuilder .builder-section').forEach(section => {
+        section.classList.add('hidden');
+      });
+      document.getElementById('welcomeMessage').classList.add('hidden');
+      document.getElementById('previewSection').classList.add('hidden');
+
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      } else {
+        document.getElementById('welcomeMessage').classList.remove('hidden');
+      }
+
+      document.querySelectorAll('#portfolioBuilder .sidebar ul li a').forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('onclick').includes(sectionId)) {
+          a.classList.add('active');
+        }
+      });
+    }
+
+    function showRecruiterSection(sectionId, event) {
+      if (event) event.preventDefault();
+      document.querySelectorAll('#recruiterApp .builder-section').forEach(section => {
+        section.classList.add('hidden');
+      });
+      document.getElementById('recruiterWelcomeMessage').classList.add('hidden');
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      } else {
+        document.getElementById('recruiterWelcomeMessage').classList.remove('hidden');
+      }
+      document.querySelectorAll('#recruiterApp .sidebar ul li a').forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('onclick').includes(sectionId)) {
+          a.classList.add('active');
+        }
+      });
+    }
+
+    function handlePhotoUpload(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          const imgElement = document.getElementById('prevPhotoDisplay');
+          const container = document.getElementById('prevPhotoContainer');
+          if (imgElement && container) {
+            imgElement.src = e.target.result;
+            container.classList.remove('hidden');
+          }
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function generatePreview() {
+      document.getElementById('prevName').innerText = document.getElementById('inpFullName').value || "Your Name";
+      document.getElementById('prevHeadline').innerText = document.getElementById('inpHeadline').value || "Professional Headline";
+      document.getElementById('prevEmail').innerText = document.getElementById('inpEmail').value || "email@example.com";
+      document.getElementById('prevPhone').innerText = document.getElementById('inpPhone').value || "+123456789";
+      document.getElementById('prevLink').innerText = document.getElementById('inpLinkedIn').value || "linkedin.com";
+      document.getElementById('prevSummary').innerText = document.getElementById('inpSummary').value || "No summary provided.";
+
+      document.getElementById('prevExpCompany').innerText = document.getElementById('inpExpCompany').value || "Company Name";
+      document.getElementById('prevExpTitle').innerText = document.getElementById('inpExpTitle').value || "Job Title";
+
+      const start = document.getElementById('inpExpStart').value;
+      const end = document.getElementById('inpExpEnd').value;
+      document.getElementById('prevExpDate').innerText = (start && end) ? `${start} to ${end}` : "Dates";
+
+      document.getElementById('prevExpDesc').innerText = document.getElementById('inpExpDesc').value || "Responsibilities...";
+
+      document.getElementById('prevEduInst').innerText = document.getElementById('inpEduInst').value || "Institution Name";
+      document.getElementById('prevEduDegree').innerText = document.getElementById('inpEduDegree').value || "Degree";
+      document.getElementById('prevEduDate').innerText = document.getElementById('inpEduDate').value || "Year";
+      const gpa = document.getElementById('inpEduGpa').value;
+      document.getElementById('prevEduGpa').innerText = gpa ? `(GPA: ${gpa})` : "";
+
+      document.getElementById('prevProjTitle').innerText = document.getElementById('inpProjTitle').value || "Project Title";
+      document.getElementById('prevProjDesc').innerText = document.getElementById('inpProjDesc').value || "Project Description...";
+      document.getElementById('prevProjTech').innerText = document.getElementById('inpProjTech').value || "Tech Stack";
+      document.getElementById('prevProjLink').href = document.getElementById('inpProjLink').value || "#";
+      document.getElementById('prevProjLink').innerText = document.getElementById('inpProjLink').value ? "View Project" : "";
+
+      document.getElementById('prevSkillLang').innerText = document.getElementById('inpSkillLang').value || "None";
+      document.getElementById('prevSkillFrame').innerText = document.getElementById('inpSkillFrame').value || "None";
+      document.getElementById('prevSkillTools').innerText = document.getElementById('inpSkillTools').value || "None";
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('portfolioPreviewContent');
+      const opt = {
+        margin: 0.5,
+        filename: 'My_Portfolio.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    function exportWord() {
+      var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML to Word Document with JavaScript</title></head><body>";
+      var footer = "</body></html>";
+      var sourceHTML = header + document.getElementById("portfolioPreviewContent").innerHTML + footer;
+
+      var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+      var fileDownload = document.createElement("a");
+      document.body.appendChild(fileDownload);
+      fileDownload.href = source;
+      fileDownload.download = 'My_Portfolio.doc';
+      fileDownload.click();
+      document.body.removeChild(fileDownload);
+    }
+
+    function printPortfolio() {
+      var printContents = document.getElementById('portfolioPreviewContent').innerHTML;
+      var originalContents = document.body.innerHTML;
+
+      document.body.innerHTML = `<div style="padding:40px;">${printContents}</div>`;
+      window.print();
+      document.body.innerHTML = originalContents;
+      window.location.reload();
+    }
+  </script>
+</body>
+
+</html>

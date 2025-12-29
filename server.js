@@ -15,13 +15,13 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static('uploads'));
 
 // Database Connection
-mongoose.connect('mongodb://127.0.0.1:27017/portfolioApp')
+mongoose.connect('mongodb+srv://sandesh:sandesh123@fwd.7nqhsee.mongodb.net/?appName=FWD')
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log("DB Error:", err));
 // File Upload Storage Engine
 const storage = multer.diskStorage({
   destination: './uploads/',
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });

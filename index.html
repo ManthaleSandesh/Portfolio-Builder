@@ -440,10 +440,57 @@
         if (res.ok) {
           currentUserEmail = email;
           showApp();
+          populateForm(data.user);
         } else alert(data.message);
       } catch (err) {
         console.error(err);
         alert("Server connection failed. Is the terminal running?");
+      }
+    }
+
+    function populateForm(user) {
+      if (!user || !user.details) return;
+      const d = user.details;
+
+      // Personal Details
+      if (d.headline) document.getElementById('inpHeadline').value = d.headline;
+      if (d.phone) document.getElementById('inpPhone').value = d.phone;
+      if (d.linkedin) document.getElementById('inpLinkedIn').value = d.linkedin;
+      if (d.summary) document.getElementById('inpSummary').value = d.summary;
+
+      // Experience (Load first item)
+      if (d.experience && d.experience.length > 0) {
+        const exp = d.experience[0];
+        document.getElementById('inpExpCompany').value = exp.company || "";
+        document.getElementById('inpExpTitle').value = exp.title || "";
+        document.getElementById('inpExpStart').value = exp.startDate || "";
+        document.getElementById('inpExpEnd').value = exp.endDate || "";
+        document.getElementById('inpExpDesc').value = exp.description || "";
+      }
+
+      // Education (Load first item)
+      if (d.education && d.education.length > 0) {
+        const edu = d.education[0];
+        document.getElementById('inpEduInst').value = edu.institution || "";
+        document.getElementById('inpEduDegree').value = edu.degree || "";
+        document.getElementById('inpEduDate').value = edu.graduationDate || "";
+        document.getElementById('inpEduGpa').value = edu.gpa || "";
+      }
+
+      // Projects (Load first item)
+      if (d.projects && d.projects.length > 0) {
+        const proj = d.projects[0];
+        document.getElementById('inpProjTitle').value = proj.title || "";
+        document.getElementById('inpProjDesc').value = proj.description || "";
+        document.getElementById('inpProjLink').value = proj.link || "";
+        document.getElementById('inpProjTech').value = proj.technologies || "";
+      }
+
+      // Skills
+      if (d.skills) {
+        document.getElementById('inpSkillLang').value = d.skills.languages || "";
+        document.getElementById('inpSkillFrame').value = d.skills.frameworks || "";
+        document.getElementById('inpSkillTools').value = d.skills.tools || "";
       }
     }
 
@@ -788,7 +835,7 @@
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: currentUserEmail, details })
       });
-      alert("Saved! (Remember to push changes to GitHub for live site)");
+      alert("Saved!");
     }
 
     async function uploadPortfolio() {

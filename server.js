@@ -15,7 +15,6 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static('uploads'));
 
 // Database Connection
-mongoose.connect('mongodb+srv://sandesh:sandesh123@fwd.7nqhsee.mongodb.net/?appName=FWD')
 mongoose.connect('mongodb+srv://sandesh:sandesh789@fwd.7nqhsee.mongodb.net/?appName=FWD')
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log("DB Error:", err));

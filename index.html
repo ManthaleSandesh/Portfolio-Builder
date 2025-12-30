@@ -754,14 +754,41 @@
         phone: document.getElementById('inpPhone').value,
         linkedin: document.getElementById('inpLinkedIn').value,
         summary: document.getElementById('inpSummary').value,
-        // Add more fields if necessary...
+
+        experience: [{
+          company: document.getElementById('inpExpCompany').value,
+          title: document.getElementById('inpExpTitle').value,
+          startDate: document.getElementById('inpExpStart').value,
+          endDate: document.getElementById('inpExpEnd').value,
+          description: document.getElementById('inpExpDesc').value
+        }],
+
+        education: [{
+          institution: document.getElementById('inpEduInst').value,
+          degree: document.getElementById('inpEduDegree').value,
+          graduationDate: document.getElementById('inpEduDate').value,
+          gpa: document.getElementById('inpEduGpa').value
+        }],
+
+        projects: [{
+          title: document.getElementById('inpProjTitle').value,
+          description: document.getElementById('inpProjDesc').value,
+          link: document.getElementById('inpProjLink').value,
+          technologies: document.getElementById('inpProjTech').value
+        }],
+
+        skills: {
+          languages: document.getElementById('inpSkillLang').value,
+          frameworks: document.getElementById('inpSkillFrame').value,
+          tools: document.getElementById('inpSkillTools').value
+        }
       };
 
       await fetch(`${API_URL}/jobseeker/update`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: currentUserEmail, details })
       });
-      alert("Saved!");
+      alert("Saved! (Remember to push changes to GitHub for live site)");
     }
 
     async function uploadPortfolio() {
